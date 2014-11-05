@@ -4,5 +4,6 @@ How to compile?
 
 How to use?
 1. Change directory to pc/WhatTheTalkServer
-2. Run "java -cp bin com.wtt.server.Main"
+2. Run "java -cp bin com.wtt.server.Main [PORT]"
 3. Close this program by entering "exit"
+** Default PORT is 5566.
