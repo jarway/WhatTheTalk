@@ -1,16 +1,19 @@
 package com.wtt.app;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -18,11 +21,22 @@ public class MainActivity extends ActionBarActivity {
 	private EditText mIpEdit, mPortEdit, mNameEdit;
 	private Button mConnectBtn, mWhatBtn;
 	private MessageClient mMsgClient;
+	private ListView mMsgListView;
+	private ArrayAdapter<String> mMsgAdapter;
+	private ArrayList<String> mMsgAryList = new ArrayList<String>();
 	
 	private final int MSG_CLIENT_SUCCESS = 0;
 	private final int MSG_CLIENT_ERROR_IO = 1;
 	private final int MSG_CLIENT_ERROR_NUMBER_FORMAT = 2;
-		
+	
+	private Handler mMsgHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			String msgStr = (String)msg.obj;
+			mMsgAryList.add(msgStr);
+			mMsgAdapter.notifyDataSetChanged();
+		}
+	};
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
     				String ip = address[0];
     				int port = Integer.parseInt(address[1]);
     				
-    				mMsgClient = new MessageClient(ip, port);
+    				mMsgClient = new MessageClient(ip, port, mMsgHandler);
     				mMsgClient.start();
     				
     				return MSG_CLIENT_SUCCESS;
@@ -98,7 +112,12 @@ public class MainActivity extends ActionBarActivity {
     	mNameEdit = (EditText)findViewById(R.id.nameEdit);
     	mConnectBtn = (Button)findViewById(R.id.connectBtn);
     	mWhatBtn = (Button)findViewById(R.id.whatBtn);
+    	mMsgListView = (ListView)findViewById(R.id.msgListView);
     	
     	mWhatBtn.setEnabled(false);
+    	
+    	mMsgAdapter = new ArrayAdapter<String>(this, R.layout.msg_list_item, R.id.msgText, mMsgAryList);
+    	mMsgListView.setAdapter(mMsgAdapter);
+    	mMsgListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
     }
 }

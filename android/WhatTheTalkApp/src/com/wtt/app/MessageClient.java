@@ -7,6 +7,8 @@ import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 public class MessageClient extends Thread {	
@@ -14,14 +16,16 @@ public class MessageClient extends Thread {
 	private Socket mSocket;
 	private BufferedReader mBufReader;
 	private PrintStream mPrintStream;
+	private Handler mMsgHander;
 	
-	public MessageClient(String ip, int port) throws IOException {
+	public MessageClient(String ip, int port, Handler msgHandler) throws IOException {
 		try {
 			Log.d(TAG, "Connecting to " + ip + ":" + port + ".");
 			mSocket = new Socket();
 			mSocket.connect(new InetSocketAddress(ip, port), 3000);
 			mBufReader = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
 			mPrintStream = new PrintStream(mSocket.getOutputStream());
+			mMsgHander = msgHandler;
 			Log.d(TAG, "Connected to WhatTheTalk~");
 		}
 		catch (IOException e) {
@@ -31,8 +35,12 @@ public class MessageClient extends Thread {
 		}
 	}
 	
-	public void sendMessage(String msg) {
-		mPrintStream.println(msg);
+	public void sendMessage(String msgStr) {
+		mPrintStream.println(msgStr);
+		
+		Message msg = new Message();
+		msg.obj = msgStr;
+		mMsgHander.sendMessage(msg);
 	}
 	
 	public boolean isConnected() {
@@ -54,11 +62,15 @@ public class MessageClient extends Thread {
 	public void run() {
 		try {
 			while (true) {
-				String msg = mBufReader.readLine();
-				if (msg == null) {
+				String msgStr = mBufReader.readLine();
+				if (msgStr == null) {
 					throw new IOException("Null message!");
 				}
-				Log.d(TAG, "someone says: " + msg);
+				Log.d(TAG, "someone says: " + msgStr);
+				
+				Message msg = new Message();
+				msg.obj = msgStr;
+				mMsgHander.sendMessage(msg);
 			}
 		}
 		catch (IOException e) {
