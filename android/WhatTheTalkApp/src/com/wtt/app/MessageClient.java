@@ -36,8 +36,10 @@ public class MessageClient extends Thread {
 	}
 	
 	public void sendMessage(String msgStr) {
-		mPrintStream.println(msgStr);
+		mPrintStream.print(msgStr + "\r\n");
+		mPrintStream.flush();
 		
+		//show the message string on screen
 		Message msg = new Message();
 		msg.obj = msgStr;
 		mMsgHander.sendMessage(msg);
