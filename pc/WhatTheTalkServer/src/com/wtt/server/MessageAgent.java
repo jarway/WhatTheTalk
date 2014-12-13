@@ -32,7 +32,8 @@ public class MessageAgent extends Thread {
 	}
 	
 	public void sendMessage(String msg) {
-		mPrintStream.println(msg);
+		mPrintStream.print(msg + "\r\n");
+		mPrintStream.flush();
 	}
 	
 	public void disconnect() {
