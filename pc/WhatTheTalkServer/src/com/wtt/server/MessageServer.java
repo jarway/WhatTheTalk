@@ -21,7 +21,7 @@ public class MessageServer extends Thread {
 		}		
 	}
 	
-	public void boradcast(MessageAgent sender, WttMessage msg) {
+	public void boradcast(MessageAgent sender, String msg) {
 		synchronized (msgAgentlist) {
 			for (MessageAgent msgAgent : msgAgentlist) {
 				if (msgAgent == sender)
