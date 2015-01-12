@@ -11,8 +11,8 @@ public class Main {
 			if (args.length > 0)
 				port = Integer.parseInt(args[0]); //throws NumberFormatException
 			
-			MessageServer msgServer = new MessageServer(port); //throws IOException
-			msgServer.start();
+			CmdServer cmdServer = new CmdServer(port); //throws IOException
+			cmdServer.start();
 			
 			String input;
 			do {
@@ -20,7 +20,7 @@ public class Main {
 				input = scanner.nextLine();
 			} while (!input.equals("exit"));
 			
-			msgServer.disconnect();
+			cmdServer.disconnect();
 		}
 		catch (NumberFormatException e) {
 			System.err.println("Invalid port number: " + args[0]);
