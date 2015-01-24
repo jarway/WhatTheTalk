@@ -1,7 +1,11 @@
 package com.wtt.app;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
+import com.wtt.io.C;
+import com.wtt.io.CmdObject;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.AsyncTask;
@@ -20,19 +24,19 @@ public class MainActivity extends ActionBarActivity {
 	private static final String TAG = "wtt";
 	private EditText mIpEdit, mPortEdit, mNameEdit;
 	private Button mConnectBtn, mWhatBtn;
-	private MessageClient mMsgClient;
+	private CmdClient mCmdClient;
 	private ListView mMsgListView;
 	private ArrayAdapter<String> mMsgAdapter;
 	private ArrayList<String> mMsgAryList = new ArrayList<String>();
 	
-	private final int MSG_CLIENT_SUCCESS = 0;
-	private final int MSG_CLIENT_ERROR_IO = 1;
-	private final int MSG_CLIENT_ERROR_NUMBER_FORMAT = 2;
+	private final int CMD_CLIENT_SUCCESS = 0;
+	private final int CMD_CLIENT_ERROR_IO = 1;
+	private final int CMD_CLIENT_ERROR_NUMBER_FORMAT = 2;
 	
-	private Handler mMsgHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			String msgStr = (String)msg.obj;
-			mMsgAryList.add(msgStr);
+	private Handler mOsMsgHandler = new Handler() {
+		public void handleMessage(Message osMsg) {
+			CmdObject cmdObj = (CmdObject)osMsg.obj;
+			mMsgAryList.add(cmdObj.getFrom() + ": " + cmdObj.getContentInText());
 			mMsgAdapter.notifyDataSetChanged();
 		}
 	};
@@ -54,31 +58,36 @@ public class MainActivity extends ActionBarActivity {
     				String ip = address[0];
     				int port = Integer.parseInt(address[1]);
     				
-    				mMsgClient = new MessageClient(ip, port, mMsgHandler);
-    				mMsgClient.start();
+    				mCmdClient = new CmdClient(ip, port, mOsMsgHandler);
+    				mCmdClient.start();
     				
-    				return MSG_CLIENT_SUCCESS;
+    				return CMD_CLIENT_SUCCESS;
     			}
     	    	catch (NumberFormatException e) {
     	    		Log.e(TAG, "Invalid port number: " + e.getMessage());
-    	    		return MSG_CLIENT_ERROR_NUMBER_FORMAT;
+    	    		return CMD_CLIENT_ERROR_NUMBER_FORMAT;
     	    	}
     			catch (IOException e) {
     				Log.e(TAG, "Open socket error: " + e.getMessage());
-    				return MSG_CLIENT_ERROR_IO;
+    				return CMD_CLIENT_ERROR_IO;
     			}
     		}
     		
     		@Override
     		protected void onPostExecute(Integer result) {
     			switch (result) {
-    			case MSG_CLIENT_SUCCESS:
+    			case CMD_CLIENT_SUCCESS:
+    	    		CmdObject cmdObj = new CmdObject();
+    	        	cmdObj.setAction(C.CmdAction.login);
+    	        	cmdObj.setID(mNameEdit.getText().toString());
+    				mCmdClient.sendCmd(cmdObj);
+    				
     				mWhatBtn.setEnabled(true);
     				break;
-    			case MSG_CLIENT_ERROR_IO:
+    			case CMD_CLIENT_ERROR_IO:
     				mConnectBtn.setEnabled(true);
     				break;
-    			case MSG_CLIENT_ERROR_NUMBER_FORMAT:
+    			case CMD_CLIENT_ERROR_NUMBER_FORMAT:
     				mConnectBtn.setEnabled(true);
     				mPortEdit.requestFocus();
     				break;
@@ -95,15 +104,24 @@ public class MainActivity extends ActionBarActivity {
     
     public void onWhatBtnClick(View view) {
     	Log.d(TAG, "onWhatBtnClick");
-    	mMsgClient.sendMessage(mNameEdit.getText().toString() + ": What!?");
+    	try {
+    		CmdObject cmdObj = new CmdObject();
+        	cmdObj.setAction(C.CmdAction.chat);
+        	cmdObj.setFrom(mNameEdit.getText().toString());
+        	cmdObj.setContentType(C.CmdContent.text);
+			cmdObj.setContent(new String("What the fuck!").getBytes("UTF-8"));
+			mCmdClient.sendCmd(cmdObj);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
     }
         
     @Override
     protected void onDestroy() {
     	Log.d(TAG, "onDestroy");
     	super.onDestroy();
-    	if (mMsgClient != null && mMsgClient.isAlive())
-    		mMsgClient.disconnect();
+    	if (mCmdClient != null)
+    		mCmdClient.disconnect();
     }
     
     private void setAllViews() {
