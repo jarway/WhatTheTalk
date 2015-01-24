@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import com.wtt.io.CmdObject;
+
 public class CmdServer {
 	private ServerSocket svrSocket;
 	private ArrayList<CmdAgent> cmdAgentlist;

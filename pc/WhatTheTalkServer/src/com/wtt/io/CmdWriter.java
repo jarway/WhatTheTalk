@@ -1,4 +1,4 @@
-package com.wtt.server;
+package com.wtt.io;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+
 
 public class CmdWriter {
 	private BufferedWriter mBufWriter;

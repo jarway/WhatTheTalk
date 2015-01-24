@@ -1,9 +1,12 @@
-package com.wtt.server;
+package com.wtt.io;
 
 import java.io.UnsupportedEncodingException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.wtt.io.C.CmdAction;
+import com.wtt.io.C.CmdProp;
 
 public class CmdObject {
 	private String mID;

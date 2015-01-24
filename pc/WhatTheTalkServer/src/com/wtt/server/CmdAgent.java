@@ -1,13 +1,15 @@
 package com.wtt.server;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.net.Socket;
 import java.net.SocketAddress;
+
+import com.wtt.io.C;
+import com.wtt.io.CmdObject;
+import com.wtt.io.CmdReader;
+import com.wtt.io.CmdWriter;
 
 public class CmdAgent {
 	private Socket mSocket;
@@ -51,9 +53,12 @@ public class CmdAgent {
 					if (cmdObj == null) { continue; }
 					
 					if (mID.isEmpty()) {
-						if (!cmdObj.getAction().equals(C.CmdAction.login) || cmdObj.getID().isEmpty())
+						if (!cmdObj.getAction().equals(C.CmdAction.login) || cmdObj.getID().isEmpty()) {
+							System.out.println("Log in failed.");
 							cmdObj.setStatus(400);
+						}
 						else {
+							System.out.println(cmdObj.getID() + " logged in!");
 							mID = cmdObj.getID();
 							cmdObj.setStatus(200);
 						}

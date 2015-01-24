@@ -1,4 +1,4 @@
-package com.wtt.server;
+package com.wtt.io;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +19,8 @@ public class CmdReader {
 	
 	public CmdObject readCmd() throws IOException {
 		String line = mBufReader.readLine();
+		System.out.println("line: " + line);
+		
 		if (line == null) { throw new IOException("End of stream reached."); }		
 		if (!line.startsWith("{") || !line.endsWith("}")) { return null; }
 		

@@ -1,4 +1,4 @@
-package com.wtt.server;
+package com.wtt.io;
 
 public final class C {
 	public static final String wttpVersion = "1";
