@@ -18,6 +18,7 @@ public class CmdClient {
 	private Socket mSocket;
 	private CmdReader mCmdReader;
 	private CmdPostbox mCmdPostbox;
+	private VoiceRnP mVoiceRnP;
 	private Handler mOsmsgHander;
 	private boolean mHasLoggedIn = false;
 	
@@ -29,6 +30,7 @@ public class CmdClient {
 			
 			mCmdReader = new CmdReader(mSocket.getInputStream());
 			mCmdPostbox = new CmdPostbox(new CmdWriter(mSocket.getOutputStream()));
+			mVoiceRnP = new VoiceRnP(mCmdPostbox);
 			
 			mOsmsgHander = osmsgHandler;
 			Log.d(TAG, "Connected to WhatTheTalk~");
@@ -42,6 +44,10 @@ public class CmdClient {
 	
 	public void start() {
 		new Thread(mRecvCmdRun).start();
+	}
+	
+	public void startVoiceRnP() {
+		mVoiceRnP.start();
 	}
 	
 	public void sendCmd(CmdObject cmdObj) {
@@ -67,6 +73,7 @@ public class CmdClient {
 		try {
 			if (mSocket.isConnected())
 				mSocket.close();
+			mVoiceRnP.stop();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -102,6 +109,9 @@ public class CmdClient {
 							osmsg.arg1 = 1; //is received or not
 							osmsg.obj = cmdObj;
 							mOsmsgHander.sendMessage(osmsg);		
+						}
+						else if (cmdObj.getContentType().equals(C.CmdContent.audioPcm)) {
+							mVoiceRnP.postCmd(cmdObj);
 						}
 						break;
 					}

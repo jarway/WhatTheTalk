@@ -137,6 +137,11 @@ public class MainActivity extends ActionBarActivity {
 		}
     }
     
+    public void onDialBtnClick(View view) {
+    	Log.d(TAG, "onDialBtnClick");
+    	mCmdClient.startVoiceRnP();
+    }
+    
     @Override
     protected void onDestroy() {
     	Log.d(TAG, "onDestroy");

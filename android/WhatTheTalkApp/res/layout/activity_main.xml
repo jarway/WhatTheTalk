@@ -102,7 +102,17 @@
        android:onClick="onEchoBtnClick"
        android:text="Echo"
        android:textSize="16sp" />
-      
+   
+   <Button
+       android:id="@+id/dialBtn"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_above="@+id/msgListView"
+       android:layout_toRightOf="@id/echoBtn"
+       android:onClick="onDialBtnClick"
+       android:text="Dial"
+       android:textSize="16sp" />
+   
    <ListView
        android:id="@+id/msgListView"
        android:layout_width="match_parent"
