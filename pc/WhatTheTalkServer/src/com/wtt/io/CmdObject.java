@@ -69,12 +69,13 @@ public class CmdObject {
 				jsonObj.put(C.CmdProp.status, mStatus);
 				break;
 			case C.CmdAction.chat:
-				jsonObj.put(C.CmdProp.utc, mUTC);
+				jsonObj.put(C.CmdProp.utc, mUTC > 0 ? mUTC : System.currentTimeMillis());
 				jsonObj.put(C.CmdProp.from, mFrom);
+				jsonObj.put(C.CmdProp.contentType, mContentType);
 				jsonObj.put(C.CmdProp.contentLength, mContent.length);
 				break;			
 			case C.CmdAction.echo:
-				jsonObj.put(C.CmdProp.utc, mUTC);
+				jsonObj.put(C.CmdProp.utc, mUTC > 0 ? mUTC : System.currentTimeMillis());
 				jsonObj.put(C.CmdProp.contentType, mContentType);
 				jsonObj.put(C.CmdProp.contentLength, mContent.length);
 				break;
@@ -153,6 +154,7 @@ public class CmdObject {
 
 	public void setContent(byte[] content) {
 		mContent = content;
+		mContentLen = content.length;
 	}
 	public byte[] getContent() {
 		return mContent;

@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
-
 public class CmdWriter {
 	private BufferedWriter mBufWriter;
 	private BufferedOutputStream mBufOut;
