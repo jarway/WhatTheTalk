@@ -33,10 +33,17 @@ public class MainActivity extends ActionBarActivity {
 	private final int CMD_CLIENT_ERROR_IO = 1;
 	private final int CMD_CLIENT_ERROR_NUMBER_FORMAT = 2;
 	
-	private Handler mOsMsgHandler = new Handler() {
-		public void handleMessage(Message osMsg) {
-			CmdObject cmdObj = (CmdObject)osMsg.obj;
-			mMsgAryList.add(cmdObj.getFrom() + ": " + cmdObj.getContentInText());
+	private Handler mOsmsgHandler = new Handler() {
+		public void handleMessage(Message osmsg) {
+			CmdObject cmdObj = (CmdObject)osmsg.obj;
+			
+			StringBuilder strBuilder = new StringBuilder();
+			strBuilder.append((osmsg.arg1 == 1) ? "[receive]" : "[send]")
+				.append("[" + cmdObj.getAction() + "] ")
+				.append((cmdObj.getFrom().isEmpty()) ? "" : cmdObj.getFrom())
+				.append(": " + cmdObj.getContentInText());
+			
+			mMsgAryList.add(strBuilder.toString());
 			mMsgAdapter.notifyDataSetChanged();
 		}
 	};
@@ -58,7 +65,7 @@ public class MainActivity extends ActionBarActivity {
     				String ip = address[0];
     				int port = Integer.parseInt(address[1]);
     				
-    				mCmdClient = new CmdClient(ip, port, mOsMsgHandler);
+    				mCmdClient = new CmdClient(ip, port, mOsmsgHandler);
     				mCmdClient.start();
     				
     				return CMD_CLIENT_SUCCESS;
@@ -115,7 +122,21 @@ public class MainActivity extends ActionBarActivity {
 			e.printStackTrace();
 		}
     }
-        
+
+    public void onEchoBtnClick(View view) {
+    	Log.d(TAG, "onEchoBtnClick");
+    	try {
+    		CmdObject cmdObj = new CmdObject();
+        	cmdObj.setAction(C.CmdAction.echo);
+        	cmdObj.setFrom(mNameEdit.getText().toString());
+        	cmdObj.setContentType(C.CmdContent.text);
+			cmdObj.setContent(new String("What the fuck!").getBytes("UTF-8"));
+			mCmdClient.sendCmd(cmdObj);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+    }
+    
     @Override
     protected void onDestroy() {
     	Log.d(TAG, "onDestroy");

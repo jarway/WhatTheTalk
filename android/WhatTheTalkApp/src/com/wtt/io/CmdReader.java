@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+import android.util.Log;
+
 public class CmdReader {
 	private BufferedReader mBufReader;
 	
@@ -19,6 +21,8 @@ public class CmdReader {
 	
 	public CmdObject readCmd() throws IOException {
 		String line = mBufReader.readLine();
+		Log.d("wtt", "line: " + line);
+		
 		if (line == null) { throw new IOException("End of stream reached."); }		
 		if (!line.startsWith("{") || !line.endsWith("}")) { return null; }
 		
